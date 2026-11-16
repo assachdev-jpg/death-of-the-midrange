@@ -1,0 +1,19 @@
+body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: system-ui, sans-serif;
+  color: #222;
+}
+
+.subtitle {
+  color: #666;
+  margin-top: -0.5rem;
+}
+
+#court svg {
+  width: 100%;
+  max-width: 600px;
+  display: block;
+  margin: 1rem auto;
+}
