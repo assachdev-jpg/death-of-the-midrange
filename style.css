@@ -23,10 +23,28 @@ body {
 .court-lines line,
 .court-lines circle {
   fill: none;
-  stroke: #9a8c7a;
-  stroke-width: 1.5;
+  stroke: #5c4a36;
+  stroke-width: 2;
 }
 
 .court-lines .floor {
-  fill: #faf6ef;
+  fill: #ecd3ab;
+}
+
+.court-lines .paint {
+  fill: #d9a978;
+}
+
+.court-lines .dashed {
+  stroke-dasharray: 6 5;
+}
+
+.court-lines .backboard {
+  stroke: #333;
+  stroke-width: 4;
+}
+
+.court-lines .rim {
+  stroke: #e2602a;
+  stroke-width: 3;
 }
