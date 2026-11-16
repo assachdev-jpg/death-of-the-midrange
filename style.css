@@ -17,3 +17,16 @@ body {
   display: block;
   margin: 1rem auto;
 }
+
+.court-lines rect,
+.court-lines path,
+.court-lines line,
+.court-lines circle {
+  fill: none;
+  stroke: #9a8c7a;
+  stroke-width: 1.5;
+}
+
+.court-lines .floor {
+  fill: #faf6ef;
+}
