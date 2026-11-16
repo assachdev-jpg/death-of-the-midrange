@@ -22,7 +22,7 @@ const line = d3.line();
 const svg = d3
   .select('#court')
   .append('svg')
-  .attr('viewBox', `0 0 ${width} ${height}`);
+  .attr('viewBox', `-4 -4 ${width + 8} ${height + 8}`);
 
 const court = svg.append('g').attr('class', 'court-lines');
 

@@ -1,21 +1,28 @@
 body {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem 1.5rem;
   font-family: system-ui, sans-serif;
   color: #222;
 }
 
+h1 {
+  font-size: 2.6rem;
+  margin-bottom: 0.25rem;
+}
+
 .subtitle {
   color: #666;
-  margin-top: -0.5rem;
+  font-size: 1.15rem;
+  margin-top: 0;
 }
 
 #court svg {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
+  max-height: 85vh;
   display: block;
-  margin: 1rem auto;
+  margin: 1.5rem auto;
 }
 
 .court-lines rect,
