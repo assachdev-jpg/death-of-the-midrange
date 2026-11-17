@@ -25,6 +25,27 @@
     <p class="note">Each hexagon is a spot on the floor. Bigger means more shots per team per game. Color shows the zone.</p>
   </section>
 
+  <section class="writeup">
+    <h2>Prototype writeup</h2>
+
+    <h3>What we've done so far</h3>
+    <p>
+      We picked a dataset of every NBA shot from 2004 to 2025, about 4.4 million shots, and wrote a Python script that shrinks it down to a shot count, makes, and points for every one-foot spot on the court in every season.
+      We grouped the league's seven shot zones into five (rim, short paint, midrange, corner 3, and above-the-break 3) so the same colors can carry through every chart on the page.
+      We drew a half-court in D3 to real NBA dimensions, including the restricted area, the paint, and the exact 3-point line, and put hexagons on top of it where size shows shots per team per game and color shows the zone.
+      The season slider and play button animate the map from 2004 to 2025, and hovering a hexagon shows its shots per game, field goal percentage, and points per shot.
+      Even in this rough version you can watch the midrange ring empty out while the corners and the arc fill in, which is the core of our story: midrange went from about 36% of all shots to under 10%.
+    </p>
+
+    <h3>What will be most challenging</h3>
+    <p>
+      The hardest design problem is keeping the court readable while it shows a lot at once, since size and color are already doing two jobs and we still want to add points per shot and a team filter.
+      We also have to be careful with the data itself, because we found that three seasons (2019-20 through 2021-22) store shot locations at a tenth of the normal scale, and we had to fix them by checking the coordinates against each shot's listed distance.
+      Another challenge is turning one chart into a real story, which means building scroll steps, a "guess the trend" opener, and annotations that point out the surprises, like the fact that rim attempts didn't actually grow and the midrange shots mostly turned into threes.
+      Finally, linking the court to a line chart of zone shares, so the slider, the hexagons, and the lines all stay in sync, will take the most work on the D3 side.
+    </p>
+  </section>
+
   <div id="tooltip" hidden></div>
 </body>
 </html>

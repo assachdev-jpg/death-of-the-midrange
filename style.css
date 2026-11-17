@@ -141,3 +141,13 @@ h1 {
 #tooltip[hidden] {
   display: none;
 }
+.writeup {
+  max-width: 760px;
+  margin: 3rem auto 2rem;
+  line-height: 1.6;
+}
+
+.writeup h2 {
+  border-top: 1px solid #ddd;
+  padding-top: 2rem;
+}
