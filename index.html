@@ -11,6 +11,20 @@
   <h1>The Death of the Midrange</h1>
   <p class="subtitle">How the NBA's shot map changed from 2004 to 2025</p>
 
-  <div id="court"></div>
+  <section class="shot-map">
+    <div class="controls">
+      <label for="season">Season</label>
+      <input id="season" type="range" min="2004" max="2025" step="1" value="2004">
+      <span id="season-label"></span>
+      <button id="play" type="button">Play</button>
+    </div>
+
+    <div id="court"></div>
+
+    <div id="legend"></div>
+    <p class="note">Each hexagon is a spot on the floor. Bigger means more shots per team per game. Color shows the zone.</p>
+  </section>
+
+  <div id="tooltip" hidden></div>
 </body>
 </html>

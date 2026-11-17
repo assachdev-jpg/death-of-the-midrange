@@ -20,7 +20,7 @@ h1 {
 #court svg {
   width: 100%;
   max-width: 800px;
-  max-height: 85vh;
+  max-height: 78vh;
   display: block;
   margin: 1.5rem auto;
 }
@@ -54,4 +54,90 @@ h1 {
 .court-lines .rim {
   stroke: #e2602a;
   stroke-width: 3;
+}
+
+.shot-map {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+}
+
+.controls input {
+  flex: 1;
+}
+
+#season-label {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 4.5em;
+}
+
+.controls button {
+  font: inherit;
+  padding: 0.35rem 1rem;
+  border: 1px solid #5c4a36;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.hexes path {
+  stroke: white;
+  stroke-width: 0.6;
+  fill-opacity: 0.9;
+}
+
+.hexes path:hover {
+  stroke: #222;
+  stroke-width: 1.5;
+}
+
+#legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 3px;
+}
+
+.note {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+#tooltip {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+#tooltip[hidden] {
+  display: none;
 }
