@@ -151,3 +151,93 @@ h1 {
   border-top: 1px solid #ddd;
   padding-top: 2rem;
 }
+.hook {
+  font-size: 1.3rem;
+  line-height: 1.5;
+  max-width: 760px;
+  margin: 1.5rem auto 0;
+}
+
+.color-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  color: #444;
+}
+
+.legend-title {
+  font-weight: 600;
+}
+
+.court-labels text {
+  font-size: 15px;
+  font-weight: 700;
+  fill: #222;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.share-chart {
+  max-width: 800px;
+  margin: 3rem auto 0;
+}
+
+.share-chart .note {
+  text-align: left;
+}
+
+#lines svg {
+  width: 100%;
+  display: block;
+}
+
+.gridlines line {
+  stroke: #e5e5e5;
+}
+
+.gridlines path {
+  display: none;
+}
+
+.axis text {
+  font-size: 12px;
+}
+
+.share-line {
+  fill: none;
+  stroke-width: 3;
+}
+
+.line-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.crossover {
+  stroke: #999;
+  stroke-dasharray: 4 4;
+}
+
+.annotation {
+  font-size: 13px;
+  fill: #555;
+}
+
+.marker line {
+  stroke: #222;
+  stroke-width: 1;
+}
+
+.marker circle {
+  stroke: white;
+  stroke-width: 1.5;
+}
+
+.click-area {
+  fill: transparent;
+  cursor: pointer;
+}

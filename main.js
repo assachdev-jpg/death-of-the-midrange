@@ -29,7 +29,7 @@ const line = d3.line();
 const svg = d3
   .select('#court')
   .append('svg')
-  .attr('viewBox', `-4 -4 ${width + 8} ${height + 8}`);
+  .attr('viewBox', `-4 -26 ${width + 8} ${height + 30}`);
 
 const court = svg.append('g').attr('class', 'court-lines');
 const hexLayer = svg.append('g').attr('class', 'hexes');
@@ -86,6 +86,7 @@ topLines
   .attr('r', x(0.75) - x(0));
 
 const grid = await d3.csv('data/shot_grid.csv', d3.autoType);
+const zoneRows = await d3.csv('data/zones_by_season.csv', d3.autoType);
 const teamGames = await d3.csv('data/team_games.csv', d3.autoType);
 const gamesBySeason = new Map(teamGames.map((d) => [d.season, d.team_games]));
 
@@ -134,6 +135,53 @@ const capPerGame = d3.quantile(
 );
 const size = d3.scaleSqrt().domain([0, capPerGame]).range([0, hexRadius]).clamp(true);
 
+const ppsBins = [0.8, 0.95, 1.1, 1.25];
+const ppsColor = d3
+  .scaleThreshold()
+  .domain(ppsBins)
+  .range(['#b2182b', '#ef8a62', '#fddbc7', '#67a9cf', '#2166ac']);
+const ppsLabels = ['Under 0.80', '0.80 to 0.95', '0.95 to 1.10', '1.10 to 1.25', '1.25 and up'];
+
+let colorMode = 'zone';
+
+function hexColor(d) {
+  return colorMode === 'zone' ? zoneColor(d.zone) : ppsColor(d.pps);
+}
+
+const shareBySeason = d3.rollup(
+  zoneRows,
+  (v) => {
+    const share = Object.fromEntries(v.map((d) => [d.zone, d.share]));
+    return {
+      Rim: share['Rim'],
+      'Short paint': share['Short paint'],
+      Midrange: share['Midrange'],
+      '3-pointers': share['Corner 3'] + share['Above-break 3'],
+    };
+  },
+  (d) => d.season,
+);
+
+const courtLabels = [
+  { key: 'Rim', x: 0, y: -1.1 },
+  { key: 'Midrange', x: -14.5, y: 12 },
+  { key: '3-pointers', x: 0, y: 34 },
+];
+
+const labelLayer = svg.append('g').attr('class', 'court-labels');
+const labelText = labelLayer
+  .selectAll('text')
+  .data(courtLabels)
+  .join('text')
+  .attr('x', (d) => x(d.x))
+  .attr('y', (d) => y(d.y))
+  .attr('text-anchor', 'middle');
+
+function drawCourtLabels(season) {
+  const share = shareBySeason.get(season);
+  labelText.text((d) => `${d.key} ${d3.format('.0%')(share[d.key])}`);
+}
+
 const tooltip = d3.select('#tooltip');
 
 function showTooltip(event, d) {
@@ -155,6 +203,8 @@ function seasonLabel(season) {
 
 function draw(season) {
   d3.select('#season-label').text(seasonLabel(season));
+  drawCourtLabels(season);
+  moveMarker(season);
 
   hexLayer
     .selectAll('path')
@@ -172,16 +222,155 @@ function draw(season) {
     .on('mouseleave', () => tooltip.attr('hidden', true))
     .transition()
     .duration(400)
-    .attr('fill', (d) => zoneColor(d.zone))
+    .attr('fill', hexColor)
     .attr('d', (d) => hexbin.hexagon(size(d.perGame)));
 }
 
 const legend = d3.select('#legend');
-zoneOrder.forEach((zone) => {
-  const item = legend.append('span').attr('class', 'legend-item');
-  item.append('span').attr('class', 'swatch').style('background', zoneColor(zone));
-  item.append('span').text(zone);
+
+function drawLegend() {
+  legend.selectAll('*').remove();
+  const items =
+    colorMode === 'zone'
+      ? zoneOrder.map((zone) => [zone, zoneColor(zone)])
+      : ppsLabels.map((label, i) => [label, ppsColor.range()[i]]);
+  if (colorMode === 'pps')
+    legend.append('span').attr('class', 'legend-title').text('Points per shot:');
+  items.forEach(([label, color]) => {
+    const item = legend.append('span').attr('class', 'legend-item');
+    item.append('span').attr('class', 'swatch').style('background', color);
+    item.append('span').text(label);
+  });
+}
+
+d3.selectAll('input[name="color-mode"]').on('change', (event) => {
+  colorMode = event.target.value;
+  drawLegend();
+  hexLayer.selectAll('path').transition().duration(400).attr('fill', hexColor);
 });
+
+const lineZones = ['Rim', 'Short paint', 'Midrange', '3-pointers'];
+const lineColor = d3
+  .scaleOrdinal()
+  .domain(lineZones)
+  .range(['#d55e00', '#e69f00', '#cc79a7', '#0072b2']);
+
+const lw = 760;
+const lh = 340;
+const lm = { top: 20, right: 120, bottom: 30, left: 44 };
+
+const lx = d3
+  .scaleLinear()
+  .domain([2004, 2025])
+  .range([lm.left, lw - lm.right]);
+const ly = d3
+  .scaleLinear()
+  .domain([0, 0.45])
+  .range([lh - lm.bottom, lm.top]);
+
+const lineSvg = d3.select('#lines').append('svg').attr('viewBox', `0 0 ${lw} ${lh}`);
+
+lineSvg
+  .append('g')
+  .attr('class', 'gridlines')
+  .attr('transform', `translate(${lm.left}, 0)`)
+  .call(
+    d3
+      .axisLeft(ly)
+      .ticks(5)
+      .tickSize(-(lw - lm.left - lm.right))
+      .tickFormat(''),
+  );
+
+lineSvg
+  .append('g')
+  .attr('class', 'axis')
+  .attr('transform', `translate(0, ${lh - lm.bottom})`)
+  .call(
+    d3
+      .axisBottom(lx)
+      .ticks(11)
+      .tickFormat((d) => seasonLabel(d)),
+  );
+
+lineSvg
+  .append('g')
+  .attr('class', 'axis')
+  .attr('transform', `translate(${lm.left}, 0)`)
+  .call(d3.axisLeft(ly).ticks(5).tickFormat(d3.format('.0%')));
+
+const crossover = seasons.find(
+  (s) => shareBySeason.get(s)['3-pointers'] > shareBySeason.get(s)['Midrange'],
+);
+
+lineSvg
+  .append('line')
+  .attr('class', 'crossover')
+  .attr('x1', lx(crossover))
+  .attr('x2', lx(crossover))
+  .attr('y1', lm.top)
+  .attr('y2', lh - lm.bottom);
+
+lineSvg
+  .append('text')
+  .attr('class', 'annotation')
+  .attr('x', lx(crossover) + 6)
+  .attr('y', lm.top + 12)
+  .text(`${seasonLabel(crossover)}: threes pass the midrange`);
+
+const lineGen = d3
+  .line()
+  .x((d) => lx(d.season))
+  .y((d) => ly(d.value));
+
+lineZones.forEach((zone) => {
+  const points = seasons.map((s) => ({ season: s, value: shareBySeason.get(s)[zone] }));
+  lineSvg
+    .append('path')
+    .attr('class', 'share-line')
+    .attr('stroke', lineColor(zone))
+    .attr('d', lineGen(points));
+  lineSvg
+    .append('text')
+    .attr('class', 'line-label')
+    .attr('x', lx(2025) + 8)
+    .attr('y', ly(points.at(-1).value) + 4)
+    .attr('fill', lineColor(zone))
+    .text(`${zone} ${d3.format('.0%')(points.at(-1).value)}`);
+});
+
+const marker = lineSvg.append('g').attr('class', 'marker');
+marker
+  .append('line')
+  .attr('y1', lm.top)
+  .attr('y2', lh - lm.bottom);
+const markerDots = marker
+  .selectAll('circle')
+  .data(lineZones)
+  .join('circle')
+  .attr('r', 4.5)
+  .attr('fill', (d) => lineColor(d));
+
+function moveMarker(season) {
+  marker.attr('transform', `translate(${lx(season)}, 0)`);
+  markerDots.attr('cy', (d) => ly(shareBySeason.get(season)[d]));
+}
+
+lineSvg
+  .append('rect')
+  .attr('class', 'click-area')
+  .attr('x', lm.left)
+  .attr('y', lm.top)
+  .attr('width', lw - lm.left - lm.right)
+  .attr('height', lh - lm.top - lm.bottom)
+  .on('click', (event) => {
+    const [mx] = d3.pointer(event);
+    const season = Math.round(lx.invert(mx));
+    slider.property('value', season);
+    draw(season);
+  });
+
+drawLegend();
 
 const slider = d3.select('#season');
 slider.on('input', (event) => draw(+event.target.value));
