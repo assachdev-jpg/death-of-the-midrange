@@ -14,27 +14,66 @@
   <p class="hook">
     In 2004, more than a third of every shot in the NBA was a midrange jumper.
     Last season it was fewer than 1 in 10.
-    Press play and watch it disappear.
+    Scroll down and watch it disappear.
   </p>
 
-  <section class="shot-map">
-    <div class="controls">
-      <label for="season">Season</label>
-      <input id="season" type="range" min="2004" max="2025" step="1" value="2004">
-      <span id="season-label"></span>
-      <button id="play" type="button">Play</button>
+  <section id="scrolly">
+    <div class="steps">
+      <div class="step" data-season="2004" data-mode="zone">
+        <h3>2003-04</h3>
+        <p>This is every shot taken in the NBA that season, piled onto one half-court. Each hexagon is a spot on the floor, and bigger hexagons mean more shots per team per game.</p>
+        <p>See all that pink? That's the midrange: long twos from inside the 3-point line. It was <strong>36%</strong> of all shots, more than shots at the rim.</p>
+      </div>
+      <div class="step" data-season="2004" data-mode="pps">
+        <h3>But it was a bad shot</h3>
+        <p>Now the color shows how many points each spot was worth on average. Red is bad, blue is good.</p>
+        <p>The midrange is almost all red. It averaged just <strong>0.76 points per shot</strong>, while a shot at the rim was worth about 1.16 and a corner three about 1.13.</p>
+      </div>
+      <div class="step" data-season="2012" data-mode="zone">
+        <h3>2011-12</h3>
+        <p>Eight years later, not much has changed. Teams still took <strong>30%</strong> of their shots from the midrange, even though the numbers said it was the worst shot on the floor.</p>
+      </div>
+      <div class="step" data-season="2015" data-mode="zone">
+        <h3>2014-15: the flip</h3>
+        <p>This is the first season the league took more threes than midrange shots. Watch the blue band around the arc start to thicken while the pink ring thins out.</p>
+      </div>
+      <div class="step" data-season="2019" data-mode="zone">
+        <h3>2018-19</h3>
+        <p>In just four years, the midrange fell from <strong>26%</strong> of shots to <strong>15%</strong>. The corners, the shortest three on the court, light up on both sides.</p>
+      </div>
+      <div class="step" data-season="2025" data-mode="zone">
+        <h3>2024-25</h3>
+        <p>Today the midrange is under <strong>10%</strong> of all shots. Threes are 42%. The pink ring that dominated 2004 is almost gone.</p>
+      </div>
+      <div class="step" data-season="2025" data-mode="pps">
+        <h3>The twist</h3>
+        <p>Here's the strange part: players actually got <em>better</em> at the midrange. It's worth <strong>0.83 points per shot</strong> now, up from 0.76.</p>
+        <p>It still didn't matter. Everything else got better too, and the midrange is still the reddest part of the floor.</p>
+      </div>
+      <div class="step" data-season="2025" data-mode="zone">
+        <h3>Your turn</h3>
+        <p>Drag the slider, press play, or switch the colors to explore any season yourself. Hover a hexagon to see exactly how many shots came from that spot and what they were worth.</p>
+      </div>
     </div>
 
-    <div class="color-toggle">
-      <span>Color by</span>
-      <label><input type="radio" name="color-mode" value="zone" checked> Zone</label>
-      <label><input type="radio" name="color-mode" value="pps"> Points per shot</label>
+    <div class="sticky">
+      <div class="controls">
+        <label for="season">Season</label>
+        <input id="season" type="range" min="2004" max="2025" step="1" value="2004">
+        <span id="season-label"></span>
+        <button id="play" type="button">Play</button>
+      </div>
+
+      <div class="color-toggle">
+        <span>Color by</span>
+        <label><input type="radio" name="color-mode" value="zone" checked> Zone</label>
+        <label><input type="radio" name="color-mode" value="pps"> Points per shot</label>
+      </div>
+
+      <div id="court"></div>
+
+      <div id="legend"></div>
     </div>
-
-    <div id="court"></div>
-
-    <div id="legend"></div>
-    <p class="note">Each hexagon is a spot on the floor. Bigger means more shots per team per game.</p>
   </section>
 
   <section class="share-chart">
