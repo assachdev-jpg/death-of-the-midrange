@@ -242,7 +242,7 @@ h1 {
 #scrolly {
   display: flex;
   gap: 2.5rem;
-  margin-top: 2rem;
+  margin-top: 4rem;
 }
 
 .steps {
@@ -282,4 +282,72 @@ h1 {
 
 .sticky .controls {
   margin-top: 0;
+}
+
+.guess {
+  max-width: 800px;
+  margin: 2.5rem auto 0;
+}
+
+#guess-chart svg {
+  width: 100%;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.guess-zone {
+  fill: #cc79a7;
+  fill-opacity: 0.08;
+}
+
+.known-line {
+  fill: none;
+  stroke: #cc79a7;
+  stroke-width: 3;
+}
+
+.user-line {
+  fill: none;
+  stroke: #222;
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
+}
+
+.actual-line {
+  fill: none;
+  stroke: #cc79a7;
+  stroke-width: 3.5;
+}
+
+.guess-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.guess-actions button {
+  font: inherit;
+  padding: 0.45rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: #cc79a7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.guess-actions button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#guess-hint {
+  color: #666;
+}
+
+#guess-result {
+  font-size: 1.15rem;
+  line-height: 1.5;
 }
