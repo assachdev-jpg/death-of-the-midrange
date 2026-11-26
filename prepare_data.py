@@ -1,73 +1,108 @@
-import glob
-import os
-import sys
-import zipfile
-import pandas as pd
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Death of the Midrange</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <h1>The Death of the Midrange</h1>
+  <p class="subtitle">How the NBA's shot map changed from 2004 to 2025</p>
 
-RAW = sys.argv[1] if len(sys.argv) > 1 else '../nba-data'
-OUT = 'data'
+  <p class="hook">
+    In 2004, more than a third of every shot in the NBA was a midrange jumper.
+    Last season it was fewer than 1 in 10.
+    Scroll down and watch it disappear.
+  </p>
 
-ZONES = {
-    'Restricted Area': 'Rim',
-    'In The Paint (Non-RA)': 'Short paint',
-    'Mid-Range': 'Midrange',
-    'Left Corner 3': 'Corner 3',
-    'Right Corner 3': 'Corner 3',
-    'Above the Break 3': 'Above-break 3',
-}
+  <section id="scrolly">
+    <div class="steps">
+      <div class="step" data-season="2004" data-mode="zone">
+        <h3>2003-04</h3>
+        <p>This is every shot taken in the NBA that season, piled onto one half-court. Each hexagon is a spot on the floor, and bigger hexagons mean more shots per team per game.</p>
+        <p>See all that pink? That's the midrange: long twos from inside the 3-point line. It was <strong>36%</strong> of all shots, more than shots at the rim.</p>
+      </div>
+      <div class="step" data-season="2004" data-mode="pps">
+        <h3>But it was a bad shot</h3>
+        <p>Now the color shows how many points each spot was worth on average. Red is bad, blue is good.</p>
+        <p>The midrange is almost all red. It averaged just <strong>0.76 points per shot</strong>, while a shot at the rim was worth about 1.16 and a corner three about 1.13.</p>
+      </div>
+      <div class="step" data-season="2012" data-mode="zone">
+        <h3>2011-12</h3>
+        <p>Eight years later, not much has changed. Teams still took <strong>30%</strong> of their shots from the midrange, even though the numbers said it was the worst shot on the floor.</p>
+      </div>
+      <div class="step" data-season="2015" data-mode="zone">
+        <h3>2014-15: the flip</h3>
+        <p>This is the first season the league took more threes than midrange shots. Watch the blue band around the arc start to thicken while the pink ring thins out.</p>
+      </div>
+      <div class="step" data-season="2019" data-mode="zone">
+        <h3>2018-19</h3>
+        <p>In just four years, the midrange fell from <strong>26%</strong> of shots to <strong>15%</strong>. The corners, the shortest three on the court, light up on both sides.</p>
+      </div>
+      <div class="step" data-season="2025" data-mode="zone">
+        <h3>2024-25</h3>
+        <p>Today the midrange is under <strong>10%</strong> of all shots. Threes are 42%. The pink ring that dominated 2004 is almost gone.</p>
+      </div>
+      <div class="step" data-season="2025" data-mode="pps">
+        <h3>The twist</h3>
+        <p>Here's the strange part: players actually got <em>better</em> at the midrange. It's worth <strong>0.83 points per shot</strong> now, up from 0.76.</p>
+        <p>It still didn't matter. Everything else got better too, and the midrange is still the reddest part of the floor.</p>
+      </div>
+      <div class="step" data-season="2025" data-mode="zone">
+        <h3>Your turn</h3>
+        <p>Drag the slider, press play, or switch the colors to explore any season yourself. Hover a hexagon to see exactly how many shots came from that spot and what they were worth.</p>
+      </div>
+    </div>
 
-cols = ['SEASON_1', 'GAME_ID', 'TEAM_NAME', 'SHOT_MADE', 'SHOT_TYPE', 'BASIC_ZONE', 'LOC_X', 'LOC_Y']
+    <div class="sticky">
+      <div class="controls">
+        <label for="season">Season</label>
+        <input id="season" type="range" min="2004" max="2025" step="1" value="2004">
+        <span id="season-label"></span>
+        <button id="play" type="button">Play</button>
+      </div>
 
+      <div class="color-toggle">
+        <span>Color by</span>
+        <label><input type="radio" name="color-mode" value="zone" checked> Zone</label>
+        <label><input type="radio" name="color-mode" value="pps"> Points per shot</label>
+      </div>
 
-def read_season(path):
-    if path.endswith('.zip'):
-        with zipfile.ZipFile(path) as z:
-            name = next(n for n in z.namelist() if n.endswith('.csv') and not n.startswith('__MACOSX'))
-            with z.open(name) as f:
-                return pd.read_csv(f, usecols=cols)
-    return pd.read_csv(path, usecols=cols)
+      <div id="court"></div>
 
+      <div id="legend"></div>
+    </div>
+  </section>
 
-files = sorted(glob.glob(os.path.join(RAW, '**', 'NBA_*_Shots.csv*'), recursive=True))
-files = [f for f in files if '__MACOSX' not in f and (f.endswith('.csv') or f.endswith('.zip'))]
-print(f'Found {len(files)} files')
+  <section class="share-chart">
+    <h2>Where the shots went</h2>
+    <p class="note">Share of all shots by zone. Click anywhere on the chart to jump the court to that season.</p>
+    <div id="lines"></div>
+  </section>
 
-df = pd.concat((read_season(f) for f in files), ignore_index=True)
-df = df[df['BASIC_ZONE'].isin(ZONES)]
-df = df[df['LOC_Y'] <= 47]
+  <section class="writeup">
+    <h2>Prototype writeup</h2>
 
-df['season'] = df['SEASON_1']
-df['zone'] = df['BASIC_ZONE'].map(ZONES)
-df['made'] = df['SHOT_MADE'].astype(str).str.upper().eq('TRUE').astype(int)
-df['points'] = df['made'] * df['SHOT_TYPE'].str[0].astype(int)
-df['x'] = df['LOC_X'].round().astype(int)
-df['y'] = df['LOC_Y'].round().astype(int)
+    <h3>What we've done so far</h3>
+    <p>
+      We picked a dataset of every NBA shot from 2004 to 2025, about 4.4 million shots, and wrote a Python script that shrinks it down to a shot count, makes, and points for every one-foot spot on the court in every season.
+      We grouped the league's seven shot zones into five (rim, short paint, midrange, corner 3, and above-the-break 3) so the same colors can carry through every chart on the page.
+      We drew a half-court in D3 to real NBA dimensions, including the restricted area, the paint, and the exact 3-point line, and put hexagons on top of it where size shows shots per team per game and color shows either the zone or binned points per shot.
+      The season slider and play button animate the map from 2004 to 2025, labels on the court update with each zone's share, and a linked line chart lets you click any season to jump the court there.
+      Even in this rough version you can watch the midrange ring empty out while the corners and the arc fill in, which is the core of our story: midrange went from about 36% of all shots to under 10%, and threes passed it in 2014-15.
+    </p>
 
-team_games = (
-    df.groupby('season')['GAME_ID'].nunique().mul(2).rename('team_games').reset_index()
-)
+    <h3>What will be most challenging</h3>
+    <p>
+      The hardest design problem is keeping the court readable while it shows a lot at once, since size and color are already doing two jobs and we still want to add a team filter.
+      We also have to be careful with the data itself, because we found that three seasons (2019-20 through 2021-22) store shot locations at a tenth of the normal scale, and we had to fix them by checking the coordinates against each shot's listed distance.
+      Another challenge is turning these charts into a real story, which means building scroll steps, a "guess the trend" opener, and annotations that point out the surprises, like the fact that rim attempts didn't actually grow and the midrange shots mostly turned into threes.
+      Finally, research we covered in class shows animation is better for presenting than for analysis, so we plan to add small multiples of every season next to the animated court, and fitting both into the page without crowding it will take careful layout work.
+    </p>
+  </section>
 
-grid = (
-    df.groupby(['season', 'x', 'y', 'zone'])
-    .agg(shots=('made', 'size'), makes=('made', 'sum'), points=('points', 'sum'))
-    .reset_index()
-)
-
-zones = (
-    df.groupby(['season', 'zone'])
-    .agg(shots=('made', 'size'), makes=('made', 'sum'), points=('points', 'sum'))
-    .reset_index()
-    .merge(team_games, on='season')
-)
-zones['share'] = zones['shots'] / zones.groupby('season')['shots'].transform('sum')
-zones['fg_pct'] = zones['makes'] / zones['shots']
-zones['pts_per_shot'] = zones['points'] / zones['shots']
-zones['shots_per_game'] = zones['shots'] / zones['team_games']
-
-os.makedirs(OUT, exist_ok=True)
-grid.to_csv(os.path.join(OUT, 'shot_grid.csv'), index=False)
-zones.round(4).to_csv(os.path.join(OUT, 'zones_by_season.csv'), index=False)
-team_games.to_csv(os.path.join(OUT, 'team_games.csv'), index=False)
-
-print(f'{len(df):,} shots -> {len(grid):,} grid rows')
-print(zones[zones['season'].isin([2004, 2025])][['season', 'zone', 'share', 'pts_per_shot']].round(3))
+  <div id="tooltip" hidden></div>
+</body>
+</html>

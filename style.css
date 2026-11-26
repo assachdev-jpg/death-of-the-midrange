@@ -19,10 +19,9 @@ h1 {
 
 #court svg {
   width: 100%;
-  max-width: 800px;
-  max-height: 78vh;
+  max-height: 68vh;
   display: block;
-  margin: 1.5rem auto;
+  margin: 0.75rem auto;
 }
 
 .court-lines rect,
@@ -54,11 +53,6 @@ h1 {
 .court-lines .rim {
   stroke: #e2602a;
   stroke-width: 3;
-}
-
-.shot-map {
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .controls {
@@ -103,7 +97,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.25rem;
+  gap: 0.4rem 0.9rem;
+  font-size: 0.9rem;
 }
 
 .legend-item {
@@ -141,6 +136,7 @@ h1 {
 #tooltip[hidden] {
   display: none;
 }
+
 .writeup {
   max-width: 760px;
   margin: 3rem auto 2rem;
@@ -151,6 +147,7 @@ h1 {
   border-top: 1px solid #ddd;
   padding-top: 2rem;
 }
+
 .hook {
   font-size: 1.3rem;
   line-height: 1.5;
@@ -240,4 +237,49 @@ h1 {
 .click-area {
   fill: transparent;
   cursor: pointer;
+}
+
+#scrolly {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+.steps {
+  flex: 0 0 34%;
+  padding-bottom: 30vh;
+}
+
+.step {
+  margin: 0 0 55vh;
+  padding: 1.25rem 1.5rem;
+  border-left: 4px solid #ddd;
+  background: white;
+  line-height: 1.55;
+  opacity: 0.35;
+  transition: opacity 300ms, border-color 300ms;
+}
+
+.step:first-child {
+  margin-top: 20vh;
+}
+
+.step.is-active {
+  opacity: 1;
+  border-color: #cc79a7;
+}
+
+.step h3 {
+  margin-top: 0;
+}
+
+.sticky {
+  flex: 1;
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+}
+
+.sticky .controls {
+  margin-top: 0;
 }

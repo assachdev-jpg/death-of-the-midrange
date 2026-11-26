@@ -1,5 +1,6 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 import { hexbin as d3Hexbin } from 'https://cdn.jsdelivr.net/npm/d3-hexbin@0.2.2/+esm';
+import scrollama from 'https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm';
 
 const width = 500;
 const height = 470;
@@ -243,11 +244,16 @@ function drawLegend() {
   });
 }
 
-d3.selectAll('input[name="color-mode"]').on('change', (event) => {
-  colorMode = event.target.value;
+function setColorMode(mode) {
+  colorMode = mode;
+  d3.selectAll('input[name="color-mode"]').property('checked', function () {
+    return this.value === mode;
+  });
   drawLegend();
   hexLayer.selectAll('path').transition().duration(400).attr('fill', hexColor);
-});
+}
+
+d3.selectAll('input[name="color-mode"]').on('change', (event) => setColorMode(event.target.value));
 
 const lineZones = ['Rim', 'Short paint', 'Midrange', '3-pointers'];
 const lineColor = d3
@@ -400,3 +406,26 @@ playButton.on('click', () => {
 });
 
 draw(2004);
+
+function stopPlaying() {
+  if (timer) {
+    timer.stop();
+    timer = null;
+    playButton.text('Play');
+  }
+}
+
+const steps = d3.selectAll('#scrolly .step');
+
+scrollama()
+  .setup({ step: '#scrolly .step', offset: 0.6 })
+  .onStepEnter(({ element }) => {
+    steps.classed('is-active', function () {
+      return this === element;
+    });
+    stopPlaying();
+    const season = +element.dataset.season;
+    slider.property('value', season);
+    draw(season);
+    if (element.dataset.mode !== colorMode) setColorMode(element.dataset.mode);
+  });
