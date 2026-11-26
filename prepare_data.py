@@ -2,7 +2,6 @@ import glob
 import os
 import sys
 import zipfile
-
 import pandas as pd
 
 RAW = sys.argv[1] if len(sys.argv) > 1 else '../nba-data'
@@ -34,11 +33,6 @@ files = [f for f in files if '__MACOSX' not in f and (f.endswith('.csv') or f.en
 print(f'Found {len(files)} files')
 
 df = pd.concat((read_season(f) for f in files), ignore_index=True)
-
-shrunk = df['SEASON_1'].isin([2020, 2021, 2022])
-df.loc[shrunk, 'LOC_X'] = df.loc[shrunk, 'LOC_X'] * 10
-df.loc[shrunk, 'LOC_Y'] = (df.loc[shrunk, 'LOC_Y'] - 5.25) * 10
-
 df = df[df['BASIC_ZONE'].isin(ZONES)]
 df = df[df['LOC_Y'] <= 47]
 

@@ -11,6 +11,12 @@
   <h1>The Death of the Midrange</h1>
   <p class="subtitle">How the NBA's shot map changed from 2004 to 2025</p>
 
+  <p class="hook">
+    In 2004, more than a third of every shot in the NBA was a midrange jumper.
+    Last season it was fewer than 1 in 10.
+    Press play and watch it disappear.
+  </p>
+
   <section class="shot-map">
     <div class="controls">
       <label for="season">Season</label>
@@ -19,10 +25,22 @@
       <button id="play" type="button">Play</button>
     </div>
 
+    <div class="color-toggle">
+      <span>Color by</span>
+      <label><input type="radio" name="color-mode" value="zone" checked> Zone</label>
+      <label><input type="radio" name="color-mode" value="pps"> Points per shot</label>
+    </div>
+
     <div id="court"></div>
 
     <div id="legend"></div>
-    <p class="note">Each hexagon is a spot on the floor. Bigger means more shots per team per game. Color shows the zone.</p>
+    <p class="note">Each hexagon is a spot on the floor. Bigger means more shots per team per game.</p>
+  </section>
+
+  <section class="share-chart">
+    <h2>Where the shots went</h2>
+    <p class="note">Share of all shots by zone. Click anywhere on the chart to jump the court to that season.</p>
+    <div id="lines"></div>
   </section>
 
   <section class="writeup">
@@ -32,17 +50,17 @@
     <p>
       We picked a dataset of every NBA shot from 2004 to 2025, about 4.4 million shots, and wrote a Python script that shrinks it down to a shot count, makes, and points for every one-foot spot on the court in every season.
       We grouped the league's seven shot zones into five (rim, short paint, midrange, corner 3, and above-the-break 3) so the same colors can carry through every chart on the page.
-      We drew a half-court in D3 to real NBA dimensions, including the restricted area, the paint, and the exact 3-point line, and put hexagons on top of it where size shows shots per team per game and color shows the zone.
-      The season slider and play button animate the map from 2004 to 2025, and hovering a hexagon shows its shots per game, field goal percentage, and points per shot.
-      Even in this rough version you can watch the midrange ring empty out while the corners and the arc fill in, which is the core of our story: midrange went from about 36% of all shots to under 10%.
+      We drew a half-court in D3 to real NBA dimensions, including the restricted area, the paint, and the exact 3-point line, and put hexagons on top of it where size shows shots per team per game and color shows either the zone or binned points per shot.
+      The season slider and play button animate the map from 2004 to 2025, labels on the court update with each zone's share, and a linked line chart lets you click any season to jump the court there.
+      Even in this rough version you can watch the midrange ring empty out while the corners and the arc fill in, which is the core of our story: midrange went from about 36% of all shots to under 10%, and threes passed it in 2014-15.
     </p>
 
     <h3>What will be most challenging</h3>
     <p>
-      The hardest design problem is keeping the court readable while it shows a lot at once, since size and color are already doing two jobs and we still want to add points per shot and a team filter.
+      The hardest design problem is keeping the court readable while it shows a lot at once, since size and color are already doing two jobs and we still want to add a team filter.
       We also have to be careful with the data itself, because we found that three seasons (2019-20 through 2021-22) store shot locations at a tenth of the normal scale, and we had to fix them by checking the coordinates against each shot's listed distance.
-      Another challenge is turning one chart into a real story, which means building scroll steps, a "guess the trend" opener, and annotations that point out the surprises, like the fact that rim attempts didn't actually grow and the midrange shots mostly turned into threes.
-      Finally, linking the court to a line chart of zone shares, so the slider, the hexagons, and the lines all stay in sync, will take the most work on the D3 side.
+      Another challenge is turning these charts into a real story, which means building scroll steps, a "guess the trend" opener, and annotations that point out the surprises, like the fact that rim attempts didn't actually grow and the midrange shots mostly turned into threes.
+      Finally, research we covered in class shows animation is better for presenting than for analysis, so we plan to add small multiples of every season next to the animated court, and fitting both into the page without crowding it will take careful layout work.
     </p>
   </section>
 
