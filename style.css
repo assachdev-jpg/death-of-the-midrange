@@ -351,3 +351,55 @@ h1 {
   font-size: 1.15rem;
   line-height: 1.5;
 }
+
+.pps-chart {
+  max-width: 800px;
+  margin: 3rem auto 0;
+}
+
+.pps-chart .note {
+  text-align: left;
+}
+
+#pps svg {
+  width: 100%;
+  display: block;
+}
+
+.row-label {
+  font-size: 14px;
+  font-weight: 600;
+  fill: #333;
+}
+
+.dumbbell {
+  stroke-width: 3;
+  stroke-opacity: 0.5;
+}
+
+.dot-start {
+  fill: white;
+  stroke-width: 2.5;
+}
+
+.dot-current {
+  fill: none;
+  stroke: #222;
+  stroke-width: 2;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.league-line line {
+  stroke: #888;
+  stroke-dasharray: 4 4;
+}
+
+.callout {
+  font-weight: 600;
+  fill: #8a3f6b;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}

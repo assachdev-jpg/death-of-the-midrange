@@ -380,6 +380,7 @@ function draw(season) {
   d3.select('#season-label').text(seasonLabel(season));
   drawCourtLabels(season);
   moveMarker(season);
+  moveCurrent(season);
 
   hexLayer
     .selectAll('path')
@@ -428,6 +429,149 @@ function setColorMode(mode) {
 }
 
 d3.selectAll('input[name="color-mode"]').on('change', (event) => setColorMode(event.target.value));
+
+const ppsZones = ['Rim', 'Corner 3', 'Above-break 3', 'Short paint', 'Midrange'];
+const ppsBySeason = d3.rollup(
+  zoneRows,
+  (v) => {
+    const row = Object.fromEntries(v.map((d) => [d.zone, d]));
+    row.league = d3.sum(v, (d) => d.points) / d3.sum(v, (d) => d.shots);
+    return row;
+  },
+  (d) => d.season,
+);
+
+const pw = 760;
+const ph = 300;
+const pm = { top: 40, right: 40, bottom: 40, left: 120 };
+
+const px = d3
+  .scaleLinear()
+  .domain([0.7, 1.4])
+  .range([pm.left, pw - pm.right]);
+const py = d3
+  .scaleBand()
+  .domain(ppsZones)
+  .range([pm.top, ph - pm.bottom])
+  .padding(0.4);
+
+const ppsSvg = d3.select('#pps').append('svg').attr('viewBox', `0 0 ${pw} ${ph}`);
+
+ppsSvg
+  .append('g')
+  .attr('class', 'gridlines')
+  .attr('transform', `translate(0, ${ph - pm.bottom})`)
+  .call(
+    d3
+      .axisBottom(px)
+      .ticks(7)
+      .tickSize(-(ph - pm.top - pm.bottom))
+      .tickFormat(''),
+  );
+
+ppsSvg
+  .append('g')
+  .attr('class', 'axis')
+  .attr('transform', `translate(0, ${ph - pm.bottom})`)
+  .call(d3.axisBottom(px).ticks(7).tickFormat(d3.format('.1f')));
+
+ppsSvg
+  .append('text')
+  .attr('class', 'annotation')
+  .attr('x', pw - pm.right)
+  .attr('y', ph - 6)
+  .attr('text-anchor', 'end')
+  .text('Points per shot');
+
+const leagueLine = ppsSvg.append('g').attr('class', 'league-line');
+leagueLine
+  .append('line')
+  .attr('y1', pm.top - 14)
+  .attr('y2', ph - pm.bottom);
+const leagueText = leagueLine
+  .append('text')
+  .attr('class', 'annotation')
+  .attr('y', pm.top - 20)
+  .attr('text-anchor', 'middle');
+
+const rows = ppsSvg
+  .selectAll('g.pps-row')
+  .data(ppsZones)
+  .join('g')
+  .attr('class', 'pps-row')
+  .attr('transform', (d) => `translate(0, ${py(d) + py.bandwidth() / 2})`);
+
+rows
+  .append('text')
+  .attr('class', 'row-label')
+  .attr('x', pm.left - 12)
+  .attr('y', 5)
+  .attr('text-anchor', 'end')
+  .text((d) => d);
+
+const first = ppsBySeason.get(2004);
+const lastSeasonRow = ppsBySeason.get(2025);
+
+rows
+  .append('line')
+  .attr('class', 'dumbbell')
+  .attr('x1', (d) => px(first[d].pts_per_shot))
+  .attr('x2', (d) => px(lastSeasonRow[d].pts_per_shot))
+  .attr('stroke', (d) => zoneColor(d));
+
+rows
+  .append('circle')
+  .attr('class', 'dot-start')
+  .attr('r', 7)
+  .attr('cx', (d) => px(first[d].pts_per_shot))
+  .attr('stroke', (d) => zoneColor(d));
+
+rows
+  .append('circle')
+  .attr('class', 'dot-end')
+  .attr('r', 7)
+  .attr('cx', (d) => px(lastSeasonRow[d].pts_per_shot))
+  .attr('fill', (d) => zoneColor(d));
+
+const currentDots = rows
+  .append('circle')
+  .attr('class', 'dot-current')
+  .attr('r', 11)
+  .on('mouseenter mousemove', (event, zone) => {
+    const d = ppsBySeason.get(+slider.property('value'))[zone];
+    tooltip
+      .attr('hidden', null)
+      .html(
+        `<strong>${zone}, ${seasonLabel(d.season)}</strong>
+        <span>${d.pts_per_shot.toFixed(2)} points per shot</span>
+        <span>${d3.format('.1%')(d.fg_pct)} FG</span>
+        <span>${d.shots_per_game.toFixed(1)} shots per team per game</span>`,
+      )
+      .style('left', `${event.clientX + 14}px`)
+      .style('top', `${event.clientY + 14}px`);
+  })
+  .on('mouseleave', () => tooltip.attr('hidden', true));
+
+const midRow = rows.filter((d) => d === 'Midrange');
+midRow
+  .append('text')
+  .attr('class', 'annotation callout')
+  .attr('x', px(lastSeasonRow.Midrange.pts_per_shot) + 16)
+  .attr('y', 5)
+  .text('Improved, but still the worst shot on the floor');
+
+function moveCurrent(season) {
+  const row = ppsBySeason.get(season);
+  currentDots
+    .transition()
+    .duration(400)
+    .attr('cx', (d) => px(row[d].pts_per_shot));
+  leagueLine
+    .transition()
+    .duration(400)
+    .attr('transform', `translate(${px(row.league)}, 0)`);
+  leagueText.text(`League average ${seasonLabel(season)}: ${row.league.toFixed(2)}`);
+}
 
 const lineZones = ['Rim', 'Short paint', 'Midrange', '3-pointers'];
 const lineColor = d3
