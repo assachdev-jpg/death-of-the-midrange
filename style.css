@@ -403,3 +403,66 @@ h1 {
   stroke-width: 5px;
   stroke-linejoin: round;
 }
+
+.multiples {
+  max-width: 1000px;
+  margin: 3rem auto 0;
+}
+
+.multiples .note {
+  text-align: left;
+  max-width: 760px;
+}
+
+#minis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.mini {
+  margin: 0;
+  padding: 0.4rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 200ms, background 200ms;
+}
+
+.mini:hover {
+  background: #f6f1ea;
+}
+
+.mini.is-current {
+  border-color: #222;
+}
+
+.mini svg {
+  width: 100%;
+  display: block;
+}
+
+.mini-floor {
+  fill: #f3e6d0;
+  stroke: #9a8c7a;
+  stroke-width: 3;
+}
+
+.mini-line {
+  fill: none;
+  stroke: #9a8c7a;
+  stroke-width: 3;
+}
+
+.mini figcaption {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #555;
+  margin-top: 0.3rem;
+}
+
+.mini figcaption strong {
+  display: block;
+  color: #222;
+  font-size: 0.9rem;
+}

@@ -381,6 +381,7 @@ function draw(season) {
   drawCourtLabels(season);
   moveMarker(season);
   moveCurrent(season);
+  highlightMini(season);
 
   hexLayer
     .selectAll('path')
@@ -571,6 +572,64 @@ function moveCurrent(season) {
     .duration(400)
     .attr('transform', `translate(${px(row.league)}, 0)`);
   leagueText.text(`League average ${seasonLabel(season)}: ${row.league.toFixed(2)}`);
+}
+
+const miniGrid = d3.select('#minis');
+
+const minis = miniGrid
+  .selectAll('figure')
+  .data(seasons)
+  .join('figure')
+  .attr('class', 'mini')
+  .on('click', (event, season) => {
+    stopPlaying();
+    slider.property('value', season);
+    draw(season);
+    document.querySelector('#scrolly .sticky').scrollIntoView({ behavior: 'smooth' });
+  });
+
+minis.each(function (season) {
+  const mini = d3
+    .select(this)
+    .append('svg')
+    .attr('viewBox', `-4 -4 ${width + 8} ${y(32) + 8}`);
+
+  mini
+    .append('rect')
+    .attr('class', 'mini-floor')
+    .attr('x', x(-25))
+    .attr('y', y(0))
+    .attr('width', x(25) - x(-25))
+    .attr('height', y(32) - y(0));
+
+  mini
+    .append('rect')
+    .attr('class', 'mini-line')
+    .attr('x', x(-8))
+    .attr('y', y(0))
+    .attr('width', x(8) - x(-8))
+    .attr('height', y(19) - y(0));
+
+  mini.append('path').attr('class', 'mini-line').attr('d', line(threePoints));
+
+  mini
+    .append('g')
+    .selectAll('path')
+    .data(allBins.get(season))
+    .join('path')
+    .attr('transform', (d) => `translate(${d.x},${d.y})`)
+    .attr('d', (d) => hexbin.hexagon(size(d.perGame)))
+    .attr('fill', (d) => zoneColor(d.zone));
+
+  d3.select(this)
+    .append('figcaption')
+    .html(
+      `<strong>${seasonLabel(season)}</strong> Midrange ${d3.format('.0%')(shareBySeason.get(season).Midrange)}`,
+    );
+});
+
+function highlightMini(season) {
+  minis.classed('is-current', (d) => d === season);
 }
 
 const lineZones = ['Rim', 'Short paint', 'Midrange', '3-pointers'];
